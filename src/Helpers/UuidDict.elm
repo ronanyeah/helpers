@@ -1,8 +1,8 @@
-module Helpers.UuidDict exposing (insert, remove, map, fromList, empty, size, values, isEmpty, get, union, UuidDict)
+module Helpers.UuidDict exposing (insert, remove, map, fromList, empty, size, values, isEmpty, get, union, UuidDict, member)
 
 {-| Use at will.
 
-@docs insert, remove, map, fromList, empty, size, values, isEmpty, get, union, UuidDict
+@docs insert, remove, map, fromList, empty, size, values, isEmpty, get, union, UuidDict, member
 
 -}
 
@@ -97,3 +97,10 @@ isEmpty =
 get : Uuid -> UuidDict a -> Maybe a
 get i (UuidDict d) =
     Dict.get (Uuid.toString i) d
+
+
+{-| TBA.
+-}
+member : Uuid -> UuidDict a -> Bool
+member i (UuidDict d) =
+    Dict.member (Uuid.toString i) d
