@@ -1,8 +1,8 @@
-module Helpers.View exposing (when, whenJust, cappedHeight, cappedWidth, style)
+module Helpers.View exposing (when, whenJust, cappedHeight, cappedWidth, style, whenAttr)
 
 {-| Use at will.
 
-@docs when, whenJust, cappedHeight, cappedWidth, style
+@docs when, whenJust, cappedHeight, cappedWidth, style, whenAttr
 
 -}
 
@@ -20,6 +20,19 @@ when b elem =
 
     else
         none
+
+
+{-| Conditional attribute.
+-}
+whenAttr : Bool -> Attribute msg -> Attribute msg
+whenAttr bool =
+    if bool then
+        identity
+
+    else
+        Html.Attributes.classList []
+            |> Element.htmlAttribute
+            |> always
 
 
 {-| Maybe display.
