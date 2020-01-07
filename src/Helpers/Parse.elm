@@ -6,19 +6,58 @@ module Helpers.Parse exposing (httpError, gqlHttpError, gqlError)
 
 -}
 
+import Dict
 import Graphql.Http
-import Graphql.Http.GraphqlError exposing (GraphqlError)
 import Http
 import Json.Decode
+import Json.Encode
 
 
 {-| TBA.
 -}
-gqlError : (List GraphqlError -> String) -> Graphql.Http.Error a -> String
-gqlError fn err =
+gqlError : Graphql.Http.Error a -> String
+gqlError err =
     case err of
         Graphql.Http.GraphqlError _ es ->
-            fn es
+            es
+                |> List.map
+                    (\{ message, locations, details } ->
+                        [ Just message
+                        , locations
+                            |> Maybe.andThen
+                                (\xs ->
+                                    if List.isEmpty xs then
+                                        Nothing
+
+                                    else
+                                        xs
+                                            |> List.map
+                                                (\loc ->
+                                                    [ "Line: " ++ String.fromInt loc.line
+                                                    , "Column: " ++ String.fromInt loc.column
+                                                    ]
+                                                        |> String.join ", "
+                                                )
+                                            |> String.join "\n"
+                                            |> Just
+                                )
+                        , if Dict.isEmpty details then
+                            Nothing
+
+                          else
+                            details
+                                |> Dict.toList
+                                |> List.map
+                                    (\( k, v ) ->
+                                        k ++ ", " ++ Json.Encode.encode 0 v
+                                    )
+                                |> String.join "\n"
+                                |> Just
+                        ]
+                            |> List.filterMap identity
+                            |> String.join "\n"
+                    )
+                |> String.join "\n\n"
 
         Graphql.Http.HttpError e ->
             gqlHttpError e
