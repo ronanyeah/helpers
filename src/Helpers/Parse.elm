@@ -1,14 +1,27 @@
-module Helpers.Parse exposing (httpError, gqlHttpError)
+module Helpers.Parse exposing (httpError, gqlHttpError, gqlError)
 
 {-| Use at will.
 
-@docs httpError, gqlHttpError
+@docs httpError, gqlHttpError, gqlError
 
 -}
 
 import Graphql.Http
+import Graphql.Http.GraphqlError exposing (GraphqlError)
 import Http
 import Json.Decode
+
+
+{-| TBA.
+-}
+gqlError : (List GraphqlError -> String) -> Graphql.Http.Error a -> String
+gqlError fn err =
+    case err of
+        Graphql.Http.GraphqlError _ es ->
+            fn es
+
+        Graphql.Http.HttpError e ->
+            gqlHttpError e
 
 
 {-| TBA.
