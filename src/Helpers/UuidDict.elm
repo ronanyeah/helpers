@@ -57,9 +57,9 @@ union (UuidDict a) (UuidDict b) =
 
 {-| TBA.
 -}
-fromList : List { a | id : Uuid } -> UuidDict { a | id : Uuid }
+fromList : List ( Uuid, a ) -> UuidDict a
 fromList =
-    List.map (\a -> ( Uuid.toString a.id, a ))
+    List.map (\( id, a ) -> ( Uuid.toString id, a ))
         >> Dict.fromList
         >> UuidDict
 

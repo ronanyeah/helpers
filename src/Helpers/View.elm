@@ -1,8 +1,8 @@
-module Helpers.View exposing (when, whenJust, cappedHeight, cappedWidth, style, whenAttr)
+module Helpers.View exposing (when, whenJust, cappedHeight, cappedWidth, style, whenAttr, dataAttr)
 
 {-| Use at will.
 
-@docs when, whenJust, cappedHeight, cappedWidth, style, whenAttr
+@docs when, whenJust, cappedHeight, cappedWidth, style, whenAttr, dataAttr
 
 -}
 
@@ -30,8 +30,7 @@ whenAttr bool =
         identity
 
     else
-        Html.Attributes.classList []
-            |> Element.htmlAttribute
+        Element.below Element.none
             |> always
 
 
@@ -62,3 +61,11 @@ style : String -> String -> Attribute msg
 style k v =
     Html.Attributes.style k v
         |> Element.htmlAttribute
+
+
+{-| Data attribute.
+-}
+dataAttr : String -> String -> Attribute msg
+dataAttr key =
+    Html.Attributes.attribute ("data-" ++ key)
+        >> Element.htmlAttribute
