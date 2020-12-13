@@ -8,7 +8,6 @@ module Helpers.View exposing (when, whenJust, cappedHeight, cappedWidth, style, 
 
 import Element exposing (Attribute, Element, none)
 import Html.Attributes
-import Maybe.Extra
 
 
 {-| Conditional display.
@@ -37,8 +36,8 @@ whenAttr bool =
 {-| Maybe display.
 -}
 whenJust : (a -> Element msg) -> Maybe a -> Element msg
-whenJust =
-    Maybe.Extra.unwrap none
+whenJust fn =
+    Maybe.map fn >> Maybe.withDefault none
 
 
 {-| Restrict width.
