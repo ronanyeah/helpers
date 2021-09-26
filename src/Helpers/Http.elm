@@ -1,8 +1,8 @@
-module Helpers.Http exposing (parseError, parseGqlError, jsonResolver)
+module Helpers.Http exposing (parseError, parseGqlError, parseGqlHttpError, jsonResolver)
 
 {-| Use at will.
 
-@docs parseError, parseGqlError, jsonResolver
+@docs parseError, parseGqlError, parseGqlHttpError, jsonResolver
 
 -}
 

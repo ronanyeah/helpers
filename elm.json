@@ -3,7 +3,7 @@
     "name": "ronanyeah/helpers",
     "summary": "Convenience functions.",
     "license": "BSD-3-Clause",
-    "version": "5.0.0",
+    "version": "5.1.0",
     "exposed-modules": [
         "Helpers.Http",
         "Helpers.View",
