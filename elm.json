@@ -3,9 +3,9 @@
     "name": "ronanyeah/helpers",
     "summary": "Convenience functions.",
     "license": "BSD-3-Clause",
-    "version": "4.0.1",
+    "version": "5.0.0",
     "exposed-modules": [
-        "Helpers.Parse",
+        "Helpers.Http",
         "Helpers.View",
         "Helpers.UuidDict"
     ],

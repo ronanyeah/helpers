@@ -1,13 +1,15 @@
-module Helpers.View exposing (when, whenJust, cappedHeight, cappedWidth, style, whenAttr, dataAttr)
+module Helpers.View exposing (when, whenJust, cappedHeight, cappedWidth, style, whenAttr, dataAttr, onKeydown)
 
 {-| Use at will.
 
-@docs when, whenJust, cappedHeight, cappedWidth, style, whenAttr, dataAttr
+@docs when, whenJust, cappedHeight, cappedWidth, style, whenAttr, dataAttr, onKeydown
 
 -}
 
 import Element exposing (Attribute, Element, none)
 import Html.Attributes
+import Html.Events
+import Json.Decode
 
 
 {-| Conditional display.
@@ -68,3 +70,20 @@ dataAttr : String -> String -> Attribute msg
 dataAttr key =
     Html.Attributes.attribute ("data-" ++ key)
         >> Element.htmlAttribute
+
+
+{-| Listener.
+-}
+onKeydown : String -> msg -> Attribute msg
+onKeydown val msg =
+    Json.Decode.field "key" Json.Decode.string
+        |> Json.Decode.andThen
+            (\key ->
+                if key == val then
+                    Json.Decode.succeed msg
+
+                else
+                    Json.Decode.fail ""
+            )
+        |> Html.Events.on "keydown"
+        |> Element.htmlAttribute

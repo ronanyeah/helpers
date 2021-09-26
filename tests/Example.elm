@@ -2,7 +2,7 @@ module Example exposing (suite)
 
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, list, string)
-import Helpers.Parse
+import Helpers.Http
 import Helpers.UuidDict
 import Helpers.View
 import Test exposing (Test, describe, test)

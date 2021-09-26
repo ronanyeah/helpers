@@ -1,22 +1,22 @@
-module Helpers.Parse exposing (httpError, gqlHttpError, gqlError)
+module Helpers.Http exposing (parseError, parseGqlError, jsonResolver)
 
 {-| Use at will.
 
-@docs httpError, gqlHttpError, gqlError
+@docs parseError, parseGqlError, jsonResolver
 
 -}
 
 import Dict
 import Graphql.Http
 import Http
-import Json.Decode
+import Json.Decode exposing (Decoder)
 import Json.Encode
 
 
 {-| TBA.
 -}
-gqlError : Graphql.Http.Error a -> String
-gqlError err =
+parseGqlError : Graphql.Http.Error a -> String
+parseGqlError err =
     case err of
         Graphql.Http.GraphqlError _ es ->
             es
@@ -60,37 +60,40 @@ gqlError err =
                 |> String.join "\n\n"
 
         Graphql.Http.HttpError e ->
-            gqlHttpError e
+            parseGqlHttpError e
 
 
 {-| TBA.
 -}
-gqlHttpError : Graphql.Http.HttpError -> String
-gqlHttpError err =
+parseGqlHttpError : Graphql.Http.HttpError -> String
+parseGqlHttpError =
+    convertGqlHttpError >> parseError
+
+
+convertGqlHttpError : Graphql.Http.HttpError -> Http.Error
+convertGqlHttpError err =
     case err of
-        Graphql.Http.BadUrl _ ->
-            "Bad Url"
+        Graphql.Http.BadUrl u ->
+            Http.BadUrl u
 
         Graphql.Http.Timeout ->
-            "Timeout"
+            Http.Timeout
 
         Graphql.Http.NetworkError ->
-            "Network Error"
+            Http.NetworkError
 
-        Graphql.Http.BadStatus { statusCode } body ->
-            "Status Code: "
-                ++ String.fromInt statusCode
-                ++ "\n"
-                ++ body
+        Graphql.Http.BadStatus { statusCode } _ ->
+            Http.BadStatus statusCode
 
         Graphql.Http.BadPayload e ->
             Json.Decode.errorToString e
+                |> Http.BadBody
 
 
 {-| TBA.
 -}
-httpError : Http.Error -> String
-httpError err =
+parseError : Http.Error -> String
+parseError err =
     case err of
         Http.BadUrl _ ->
             "Bad Url"
@@ -106,3 +109,33 @@ httpError err =
 
         Http.BadBody e ->
             e
+
+
+{-| TBA.
+-}
+jsonResolver : Decoder a -> Http.Resolver Http.Error a
+jsonResolver decoder =
+    Http.stringResolver
+        (\response ->
+            case response of
+                Http.BadUrl_ u ->
+                    Http.BadUrl u
+                        |> Err
+
+                Http.Timeout_ ->
+                    Http.Timeout
+                        |> Err
+
+                Http.NetworkError_ ->
+                    Http.NetworkError
+                        |> Err
+
+                Http.BadStatus_ metadata _ ->
+                    Http.BadStatus metadata.statusCode
+                        |> Err
+
+                Http.GoodStatus_ _ body_ ->
+                    body_
+                        |> Json.Decode.decodeString decoder
+                        |> Result.mapError (Json.Decode.errorToString >> Http.BadBody)
+        )
